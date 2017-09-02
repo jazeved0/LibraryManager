@@ -1,0 +1,18 @@
+﻿<UserControl
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:local="clr-namespace:LibraryManager.Views" x:Class="LibraryManager.Views.ConfigNumericUpDown"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid Margin="4">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Controls:NumericUpDown Value="{Binding .}" Grid.Column="0"/>
+        <TextBlock Text="{Binding Units, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ConfigNumericUpDown}}}" Grid.Column="1" VerticalAlignment="Center" Margin="6,0,0,0"/>
+    </Grid>
+</UserControl>
