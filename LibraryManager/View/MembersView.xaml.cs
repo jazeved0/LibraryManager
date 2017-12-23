@@ -1,31 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LibraryManager.Data.Member;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
-namespace LibraryManager.Views
+namespace LibraryManager.View
 {
     /// <summary>
-    /// Interaction logic for ItemsView.xaml
+    /// Interaction logic for MembersView.xaml
     /// </summary>
-    public partial class ItemsView : UserControl
+    public partial class MembersView : UserControl
     {
-        public ItemsView()
+        public MembersView()
         {
             InitializeComponent();
+            MainWindowViewModel.Instance.MembersVM.SelectItem.SelectItem += SelectMember;
         }
 
-        private void ExpandCollapseDetails(object sender, RoutedEventArgs e)
+        private void SelectMember(object sender, Messenger.SelectItemMessenger<Member>.SelectItemEventArgs e)
+        {
+            dgMembers.SelectedItem = e.Item as Member;
+        }
+
+        void ExpandCollapseDetails(object sender, RoutedEventArgs e)
         {
             for (var vis = sender as Visual; vis != null; vis = VisualTreeHelper.GetParent(vis) as Visual)
                 if (vis is DataGridRow)

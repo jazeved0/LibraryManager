@@ -12,7 +12,7 @@
     <!--  60%  -->
     <Color x:Key="AccentColor2">#990050EF</Color>
     <!--  29.3%  -->
-    <Color x:Key="AccentColor3">#4B0050EF</Color>
+    <Color x:Key="AccentColor3">#400050EF</Color>
     <!--  20%  -->
     <Color x:Key="AccentColor4">#330050EF</Color>
 

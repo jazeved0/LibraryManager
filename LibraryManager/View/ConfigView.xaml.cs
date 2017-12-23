@@ -1,7 +1,7 @@
 ﻿using LibraryManager.ViewModels;
 using System.Windows.Controls;
 
-namespace LibraryManager.Views
+namespace LibraryManager.View
 {
     /// <summary>
     /// Interaction logic for ConfigView.xaml
@@ -26,32 +26,32 @@ namespace LibraryManager.Views
 
         private void NumericUpDown_ValueChanged(object sender, System.Windows.RoutedPropertyChangedEventArgs<double?> e)
         {
-            (this.DataContext as ConfigViewModel).UpdateEnable();
+            (this.DataContext as ConfigViewModel).ForcePropertyChanged("CommitEnable");
         }
 
         private void NumericUpDown_ValueChanged_1(object sender, System.Windows.RoutedPropertyChangedEventArgs<double?> e)
         {
-            (this.DataContext as ConfigViewModel).UpdateEnable();
+            (this.DataContext as ConfigViewModel).ForcePropertyChanged("CommitEnable");
         }
 
         private void NumericUpDown_ValueChanged_2(object sender, System.Windows.RoutedPropertyChangedEventArgs<double?> e)
         {
-            (this.DataContext as ConfigViewModel).UpdateEnable();
+            (this.DataContext as ConfigViewModel).ForcePropertyChanged("CommitEnable");
         }
 
         private void NumericUpDown_ValueChanged_3(object sender, System.Windows.RoutedPropertyChangedEventArgs<double?> e)
         {
-            (this.DataContext as ConfigViewModel).UpdateEnable();
+            (this.DataContext as ConfigViewModel).ForcePropertyChanged("CommitEnable");
         }
 
         private void NumericUpDown_ValueChanged_4(object sender, System.Windows.RoutedPropertyChangedEventArgs<double?> e)
         {
-            (this.DataContext as ConfigViewModel).UpdateEnable();
+            (this.DataContext as ConfigViewModel).ForcePropertyChanged("CommitEnable");
         }
 
         private void NumericUpDown_ValueChanged_5(object sender, System.Windows.RoutedPropertyChangedEventArgs<double?> e)
         {
-            (this.DataContext as ConfigViewModel).UpdateEnable();
+            (this.DataContext as ConfigViewModel).ForcePropertyChanged("CommitEnable");
         }
     }
 }

@@ -1,51 +1,30 @@
-﻿using System;
+﻿using LibraryManager.Data.Item.Status;
+using System;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 
 namespace LibraryManager.Data.Item
 {
-    public class IssuableItem : INotifyPropertyChanged
+    /// <summary>
+    /// Data structure that represents a single (not neccessarily unique) issuable library item that can be shelved, issued, reserved, or made overdue.
+    /// Extends NotifyPropertyChanged to allow DataBinding via the MVVM WPF structure.
+    /// </summary>
+    public class IssuableItem : NotifyPropertyChanged
     {
+        #region PrivateFields
+
         private String _id;
-        private String _name;
+        private String _title;
         private String _author;
-        private Member.Member _owner;
-        private ItemStatus _status;
         private ItemType _type;
+        private ItemStatus _status;
 
-        public String Name
-        {
-            get { return _name; }
-            set
-            {
-                if (value == _name) return;
-                _name = value;
-                OnPropertyChanged();
-            }
-        }
+        #endregion
 
-        public String Author
-        {
-            get { return _author; }
-            set
-            {
-                if (value == _author) return;
-                _author = value;
-                OnPropertyChanged();
-            }
-        }
+        #region Properties
 
-        public ItemType Type
-        {
-            get { return _type; }
-            set
-            {
-                if (value == _type) return;
-                _type = value;
-                OnPropertyChanged();
-            }
-        }
-
+        /// <summary>
+        /// A unique identifier for the issuable item
+        /// </summary>
         public String ID
         {
             get { return _id; }
@@ -57,59 +36,77 @@ namespace LibraryManager.Data.Item
             }
         }
 
-        public Member.Member Owner
+        /// <summary>
+        /// The item's title
+        /// </summary>
+        public String Title
         {
-            get { return _owner; }
+            get { return _title; }
             set
             {
-                if (value == _owner) return;
-                _owner = value;
+                if (value == _title) return;
+                _title = value;
                 OnPropertyChanged();
             }
         }
 
+        /// <summary>
+        /// The item's author's full name
+        /// </summary>
+        public String Author
+        {
+            get { return _author; }
+            set
+            {
+                if (value == _author) return;
+                _author = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// The type of the item, or the type of media it is published in
+        /// </summary>
+        public ItemType Type
+        {
+            get { return _type; }
+            set
+            {
+                if (value == _type) return;
+                _type = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// The current status of the item, whether it be shelved, issued, reserved or overdue
+        /// Provides the contract that it will always be NonNull
+        /// </summary>
         public ItemStatus Status
         {
             get { return _status; }
-            set
-            {
-                if (value.Equals(_status)) return;
-                _status = value;
-                OnPropertyChanged();
-            }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            var handler = PropertyChanged;
-            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
-        }
+        #endregion
 
-        private void StatusChanged(Object sender, PropertyChangedEventArgs e)
-        {
-            var handler = PropertyChanged;
-            if (handler != null) handler(this, new PropertyChangedEventArgs("Status"));
-        }
-
+        /// <summary>
+        /// The default initializer of IssuableItem that intiailizes its ItemStatus object and registers our property changed delegate to the ItemStatus' property changed event
+        /// </summary>
         public IssuableItem()
         {
             _status = new ItemStatus(this);
             _status.PropertyChanged += StatusChanged;
         }
 
-        public IssuableItem Issue()
+        /// <summary>
+        /// Delegate for the ItemStatus that is called each time one of the object's properties is changed
+        /// Passes through our object and notifies listeners of this for property 'Status'
+        /// </summary>
+        /// <param name="sender">Ignored</param>
+        /// <param name="e">Ignored</param>
+        private void StatusChanged(Object sender, PropertyChangedEventArgs e)
         {
-            this.Status.Type = ItemStatus.StatusType.Issued;
-            this.Status.ContextualDate = System.DateTime.Now;
-            return this;
-        }
-
-        public IssuableItem Reserve()
-        {
-            this.Status.Type = ItemStatus.StatusType.Reserved;
-            this.Status.ContextualDate = System.DateTime.Now;
-            return this;
+            ForcePropertyChanged("Status");
         }
     }
 }

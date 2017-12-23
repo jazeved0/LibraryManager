@@ -1,0 +1,96 @@
+﻿<!-- Handles the display of a single IssuableItem's ItemStatus -->
+<UserControl x:Class="LibraryManager.Controls.ItemStatusDisplay"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:itemStatus="clr-namespace:LibraryManager.Data.Item.Status"
+             xmlns:converters="clr-namespace:LibraryManager.Converters"
+             mc:Ignorable="d" 
+             d:DesignHeight="20" d:DesignWidth="400">
+    <Grid>
+        <Grid.Resources>
+            <!-- Converters -->
+            <converters:StatusFormatter x:Key="statusFormatter"/>
+            
+            <!-- Data templates based on ItemStatus.Type -->
+            <!-- ItemStatus.Type == ItemStatus.StatusType.Issued -->
+            <DataTemplate x:Key="issuedTemplate" DataType="{x:Type itemStatus:ItemStatus}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Issued to:  " FontWeight="SemiBold"/>
+                    <Button HorizontalAlignment="Center" Click="Hyperlink_Click" Style="{StaticResource Link}" Content="{Binding Owner.Name}" TextBlock.FontWeight="SemiBold"/>
+                    
+                    <TextBlock Text="  (" FontStyle="Italic"/>
+                    <TextBlock Text="{Binding Owner.Type}" FontStyle="Italic"/>
+                    <TextBlock Text=")" FontStyle="Italic"/>
+                    <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="6,2"/>
+                    
+                    <TextBlock Text="Issued on: "/>
+                    <TextBlock Text="{Binding InitialDate}"/>
+                    <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="6,2"/>
+                    
+                    <TextBlock Text="Due on: "/>
+                    <TextBlock Text="{Binding DueDate}"/>
+                    <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="6,2"/>
+                    
+                    <TextBlock Text="Time left: " FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding Path=., Converter={StaticResource statusFormatter}, ConverterParameter=no_msg}" FontWeight="SemiBold"/>
+                </StackPanel>
+            </DataTemplate>
+
+            <!-- ItemStatus.Type == ItemStatus.StatusType.Reserved -->
+            <DataTemplate x:Key="reservedTemplate" DataType="{x:Type itemStatus:ItemStatus}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Reserved for: " FontWeight="SemiBold"/>
+                    <Button HorizontalAlignment="Center" Click="Hyperlink_Click" Style="{StaticResource Link}" Content="{Binding Owner.Name}" TextBlock.FontWeight="SemiBold"/>
+                    
+                    <TextBlock Text=" (" FontStyle="Italic"/>
+                    <TextBlock Text="{Binding Owner.Type}" FontStyle="Italic"/>
+                    <TextBlock Text=")" FontStyle="Italic"/>
+                    <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="6,2"/>
+                    
+                    <TextBlock Text="Reserved on: "/>
+                    <TextBlock Text="{Binding InitialDate}"/>
+                    <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="6,2"/>
+                    
+                    <TextBlock Text="Reserved until: "/>
+                    <TextBlock Text="{Binding DueDate}"/>
+                    <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="6,2"/>
+                    
+                    <TextBlock Text="Time left: " FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding Path=., Converter={StaticResource statusFormatter}, ConverterParameter=no_msg}" FontWeight="SemiBold"/>
+                </StackPanel>
+            </DataTemplate>
+
+            <!-- ItemStatus.Type == ItemStatus.StatusType.Overdue -->
+            <DataTemplate x:Key="overdueTemplate" DataType="{x:Type itemStatus:ItemStatus}">
+                <!-- TODO -->
+            </DataTemplate>
+
+            <!-- ItemStatus.Type == ItemStatus.StatusType.Shelved -->
+            <DataTemplate x:Key="shelvedTemplate" DataType="{x:Type itemStatus:ItemStatus}">
+                <!-- Display Nothing -->
+            </DataTemplate>
+        </Grid.Resources>
+        
+        <ContentControl Content="{Binding }">
+            <ContentControl.Style>
+                <Style TargetType="{x:Type ContentControl}">
+                    <!-- Assigns the template based on the Type (with Issued as the default) -->
+                    <Setter Property="ContentTemplate" Value="{StaticResource issuedTemplate}"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Type}" Value="Reserved">
+                            <Setter Property="ContentTemplate" Value="{StaticResource reservedTemplate}"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Type}" Value="Overdue">
+                            <Setter Property="ContentTemplate" Value="{StaticResource overdueTemplate}"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Type}" Value="Shelved">
+                            <Setter Property="ContentTemplate" Value="{StaticResource shelvedTemplate}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ContentControl.Style>
+        </ContentControl>
+    </Grid>
+</UserControl>

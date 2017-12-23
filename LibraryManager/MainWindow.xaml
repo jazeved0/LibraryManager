@@ -4,11 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-        xmlns:views="clr-namespace:LibraryManager.Views"
+        xmlns:view="clr-namespace:LibraryManager.View"
         xmlns:local="clr-namespace:LibraryManager"
         mc:Ignorable="d"
         Title="Library Manager" Height="720" Width="1280"
-        Icon="Resources/libraryManagerIcon.png"
+        Icon="Resource/libraryManagerIcon.png"
         ShowIconOnTitleBar="True"
         ResizeMode="CanResizeWithGrip" IgnoreTaskbarOnMaximize="False" TitleCharacterCasing="Normal"
         GlowBrush="{Binding WindowTitleBrush, RelativeSource={RelativeSource Self}}" 
@@ -25,21 +25,21 @@
 
     <Grid>
         <!-- Main content pane -->
-        <Controls:MetroAnimatedSingleRowTabControl x:Name="MainTabControl" Grid.Row="1" Background="Transparent" Margin="4,0">
+        <Controls:MetroAnimatedSingleRowTabControl x:Name="MainTabControl" Grid.Row="1" Background="Transparent" Margin="4,0" SelectedIndex="{Binding OpenTab, Mode=TwoWay}">
             <TabItem Header="dashboard">
 
             </TabItem>
             <TabItem Header="items">
-                <views:ItemsView DataContext="{Binding}" Margin="6,0"/>
+                <view:ItemsView DataContext="{Binding ItemsVM}" Margin="6,0"/>
             </TabItem>
             <TabItem Header="members">
-                <views:MembersView DataContext="{Binding}" Margin="6,0"/>
+                <view:MembersView DataContext="{Binding MembersVM}" Margin="6,0"/>
             </TabItem>
             <TabItem Header="history">
                 
             </TabItem>
             <TabItem Header="config">
-                <views:ConfigView Margin="6,0"/>
+                <view:ConfigView Margin="6,0"/>
             </TabItem>
         </Controls:MetroAnimatedSingleRowTabControl>
     </Grid>

@@ -1,18 +1,31 @@
 ﻿using LibraryManager.Data.Item;
+using LibraryManager.Data.Item.Status;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+using System.Diagnostics.Contracts;
 
 namespace LibraryManager.Data.Member
 {
-    public class Member : INotifyPropertyChanged
+    /// <summary>
+    /// Data structure that represents a single Library member that can have items issued or reserved to.
+    /// Extends NotifyPropertyChanged to allow DataBinding via the MVVM WPF structure.
+    /// </summary>
+    public class Member : NotifyPropertyChanged
     {
+        #region PrivateFields
+
         private string _id;
         private string _name;
         private ObservableCollection<IssuableItem> _items;
         private MemberType _type;
 
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// The Unique identifier for the library member
+        /// </summary>
         public string ID
         {
             get { return _id; }
@@ -24,6 +37,9 @@ namespace LibraryManager.Data.Member
             }
         }
 
+        /// <summary>
+        /// The full name of the library member, as printed on their card
+        /// </summary>
         public string Name
         {
             get { return _name; }
@@ -35,6 +51,9 @@ namespace LibraryManager.Data.Member
             }
         }
 
+        /// <summary>
+        /// The type of the library member
+        /// </summary>
         public MemberType Type
         {
             get { return _type; }
@@ -46,50 +65,59 @@ namespace LibraryManager.Data.Member
             }
         }
 
+        /// <summary>
+        /// A non-settable collection of each Issuable item that is initialized upon Member initialization
+        /// </summary>
         public ObservableCollection<IssuableItem> Items
         {
             get { return _items; }
-            internal set
+        }
+
+        /// <summary>
+        /// The fee that the library member has incurred from each overdue IssuableItem
+        /// Each time an item's status' type changes from [Issued -> Overdue] or [Overdue -> Shelved], ForcePropertyChanged("Fee") must be called to update bindings to the fee
+        /// </summary>
+        [Pure]
+        public decimal Fee
+        {
+            get
             {
-                _items = value;
-                if(value != null)
+                decimal fee = 0m;
+                // Loop through each item
+                foreach(IssuableItem item in Items)
                 {
-                    foreach (IssuableItem item in value)
+                    // If the item is overdue,
+                    if(item.Status.Type == ItemStatus.StatusType.Overdue)
                     {
-                        item.Owner = this;
+                        // Add its fee to the overall library member's fee
+                        fee += item.Status.Fee;
                     }
                 }
+                return fee;
             }
         }
 
-        public decimal Fee
-        {
-            get { return 0.00m; }
-        }
+        #endregion
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            var handler = PropertyChanged;
-            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
-        }
-
+        /// <summary>
+        /// Default constructor for Member that is called on Database parse and on new row creation in MembersView
+        /// </summary>
         public Member()
         {
+            // Initialize the Items collection and register our delegate to its CollectionChanged event
             _items = new ObservableCollection<IssuableItem>();
             _items.CollectionChanged += Items_CollectionChanged;
         }
 
+        /// <summary>
+        /// Delegate for the Item ObservableCollection that is called each time the collection is modified
+        /// Passes through our object and notifies listeners of this for property 'Items'
+        /// </summary>
+        /// <param name="sender">Ignored</param>
+        /// <param name="e">Ignored</param>
         private void Items_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if (this.PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs("Items"));
-                foreach(object obj in e.NewItems)
-                {
-                    (obj as IssuableItem).Owner = this;
-                }
-            }
+            ForcePropertyChanged("Items");
         }
     }
 }

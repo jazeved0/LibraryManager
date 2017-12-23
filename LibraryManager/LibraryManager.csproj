@@ -34,8 +34,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Common.Logging, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Common.Logging.3.3.1\lib\net40\Common.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Common.Logging.Core, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Common.Logging.Core.3.3.1\lib\net40\Common.Logging.Core.dll</HintPath>
+    </Reference>
     <Reference Include="MahApps.Metro, Version=1.5.0.23, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.1.5.0\lib\net45\MahApps.Metro.dll</HintPath>
+    </Reference>
+    <Reference Include="Quartz, Version=2.6.0.0, Culture=neutral, PublicKeyToken=f6b8c98a402cc8a4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Quartz.2.6.0\lib\net40\Quartz.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -63,41 +72,42 @@
     </ApplicationDefinition>
     <Compile Include="BindingProxy.cs" />
     <Compile Include="Configuration.cs" />
+    <Compile Include="Controls\ItemStatusDisplay.xaml.cs">
+      <DependentUpon>ItemStatusDisplay.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converters\ColorFadeConverter.cs" />
-    <Compile Include="CustomSortBehaviour.cs" />
-    <Compile Include="Data\Item\ItemStatus.cs" />
+    <Compile Include="NotifyPropertyChanged.cs" />
+    <Compile Include="Data\Item\Status\ItemStatus.cs" />
     <Compile Include="Converters\ShowNameOrDefault.cs" />
     <Compile Include="Converters\StatusFormatter.cs" />
     <Compile Include="Converters\StatusToColorConverter.cs" />
-    <Compile Include="Converters\StringConcatConverter.cs" />
-    <Compile Include="Data\Item\Book.cs" />
     <Compile Include="Data\Item\IssuableItem.cs" />
-    <Compile Include="Data\Item\ItemStatusComparer.cs" />
     <Compile Include="Data\Item\ItemType.cs" />
     <Compile Include="Data\Member\Member.cs" />
     <Compile Include="Data\Member\MemberType.cs" />
-    <Compile Include="Data\Member\Student.cs" />
-    <Compile Include="Data\Member\Teacher.cs" />
-    <Compile Include="ICustomSorter.cs" />
     <Compile Include="Controls\ItemDisplay.xaml.cs">
       <DependentUpon>ItemDisplay.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MainWindowViewModel.cs" />
+    <Compile Include="Messenger\SelectedItemMessenger.cs" />
+    <Compile Include="ViewModel\ItemsViewModel.cs" />
+    <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="Data\SampleData.cs" />
-    <Compile Include="ViewModels\ConfigViewModel.cs" />
-    <Compile Include="Views\ConfigNumericUpDown.xaml.cs">
-      <DependentUpon>ConfigNumericUpDown.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ConfigView.xaml.cs">
+    <Compile Include="ViewModel\ConfigViewModel.cs" />
+    <Compile Include="ViewModel\MembersViewModel.cs" />
+    <Compile Include="View\ConfigView.xaml.cs">
       <DependentUpon>ConfigView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ItemsView.xaml.cs">
+    <Compile Include="View\ItemsView.xaml.cs">
       <DependentUpon>ItemsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\MembersView.xaml.cs">
+    <Compile Include="View\MembersView.xaml.cs">
       <DependentUpon>MembersView.xaml</DependentUpon>
     </Compile>
     <Page Include="Controls\ItemDisplay.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ItemStatusDisplay.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -113,23 +123,19 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Resources\Cobalt.xaml">
+    <Page Include="Resource\Cobalt.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ConfigNumericUpDown.xaml">
+    <Page Include="View\ConfigView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ConfigView.xaml">
+    <Page Include="View\ItemsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ItemsView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\MembersView.xaml">
+    <Page Include="View\MembersView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -152,6 +158,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="job_scheduling_data_2_0.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -162,10 +171,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\libraryManagerIcon.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\libraryManagerIcon.ico" />
+    <Resource Include="Resource\libraryManagerIcon.png" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

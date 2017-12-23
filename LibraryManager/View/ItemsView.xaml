@@ -1,4 +1,4 @@
-﻿<UserControl
+﻿<UserControl x:Class="LibraryManager.View.ItemsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -7,18 +7,18 @@
              xmlns:converters="clr-namespace:LibraryManager.Converters"
              xmlns:controls="clr-namespace:LibraryManager.Controls"
              xmlns:core="clr-namespace:System;assembly=mscorlib"
-             xmlns:member="clr-namespace:LibraryManager.Data.Member"
+             xmlns:item="clr-namespace:LibraryManager.Data.Item"
              xmlns:LibraryManager="clr-namespace:LibraryManager"
              xmlns:Custom="http://metro.mahapps.com/winfx/xaml/controls" 
-             x:Class="LibraryManager.Views.MembersView"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="600">
+             d:DesignHeight="300" d:DesignWidth="800">
     <UserControl.Resources>
         <converters:ColorFadeConverter x:Key="colorFadeConverter"/>
-        <converters:StringConcatConverter x:Key="stringConcatConverter"/>
         <converters:ShowNameOrDefault x:Key="showNameOrDefault"/>
+        <converters:StatusFormatter x:Key="statusFormatter"/>
+        <converters:StatusToColorConverter x:Key="statusToColorConverter"/>
         <LibraryManager:BindingProxy x:Key="highlightBrush" Data="{DynamicResource MetroDataGrid.MouseOverHighlightBrush}"/>
-        <CollectionViewSource Source="{Binding Members}" x:Key="memberView">
+        <CollectionViewSource Source="{Binding Items}" x:Key="itemView">
             <CollectionViewSource.SortDescriptions>
                 <scm:SortDescription PropertyName="ID"/>
             </CollectionViewSource.SortDescriptions>
@@ -34,16 +34,16 @@
             <Setter Property="TextBlock.TextAlignment" Value="Right"/>
             <Setter Property="Padding" Value="8,0"/>
         </Style>
-        <ObjectDataProvider x:Key="memberTypeEnum" MethodName="GetValues" ObjectType="{x:Type core:Enum}">
+        <ObjectDataProvider x:Key="itemTypeEnum" MethodName="GetValues" ObjectType="{x:Type core:Enum}">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="member:MemberType"/>
+                <x:Type TypeName="item:ItemType"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
     </UserControl.Resources>
-    <Grid Margin="0,4,0,0">
+    <Grid Margin="0,4,0,0" DataContext="{Binding Source={StaticResource itemTypeEnum}}">
         <!-- TODO Filtering and Searching -->
         <!-- TODO Real SQL Server Binding -->
-        <DataGrid x:Name="dgMembers" ItemsSource="{Binding Source={StaticResource memberView}}" AlternationCount="2" Background="#00000000" AutoGenerateColumns="False" RowDetailsVisibilityMode="Collapsed" Custom:DataGridHelper.EnableCellEditAssist="True" GridLinesVisibility="All" SelectionMode="Single">
+        <DataGrid Grid.Row="1" x:Name="dgItems"  ItemsSource="{Binding Source={StaticResource itemView}}" AlternationCount="2" Background="#00000000" AutoGenerateColumns="False" RowDetailsVisibilityMode="Collapsed" Custom:DataGridHelper.EnableCellEditAssist="True" GridLinesVisibility="All" CellEditEnding="dgItems_CellEditEnding" LoadingRow="dgItems_LoadingRow" Loaded="dgItems_Loaded">
             <DataGrid.CellStyle>
                 <Style TargetType="DataGridCell" BasedOn="{StaticResource MetroDataGridCell}">
                     <Setter Property="Padding" Value="8,0"/>
@@ -125,62 +125,26 @@
             <DataGrid.RowDetailsTemplate>
                 <DataTemplate>
                     <Border BorderThickness="0" Padding="4">
-                        <Border.Resources>
-                            <CollectionViewSource Source="{Binding Items}" x:Key="itemsView">
-                                <CollectionViewSource.SortDescriptions>
-                                    <scm:SortDescription PropertyName="Status.Type"/>
-                                </CollectionViewSource.SortDescriptions>
-                            </CollectionViewSource>
-                        </Border.Resources>
-                        <ItemsControl ItemsSource="{Binding Source={StaticResource itemsView}}">
-                            <ItemsControl.Template>
-                                <ControlTemplate>
-                                    <StackPanel Orientation="Horizontal" IsItemsHost="True" Margin="2,0,0,0"/>
-                                </ControlTemplate>
-                            </ItemsControl.Template>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal">
-                                        <controls:ItemDisplay Margin="14,0" DataContext="{Binding Path=.}"/>
-                                        <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
+                        <controls:ItemStatusDisplay DataContext="{Binding Path=Status}" Margin="20,6,0,6"/>
                     </Border>
                 </DataTemplate>
             </DataGrid.RowDetailsTemplate>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" Binding="{Binding ID}" SortDirection="Ascending" MinWidth="65"/>
-                <DataGridTemplateColumn Header="Name" MinWidth="140" SortMemberPath="Name">
-                    <DataGridTemplateColumn.CellEditingTemplate>
-                        <DataTemplate>
-                            <TextBox Text="{Binding Name}" MaxHeight="10"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellEditingTemplate>
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Path=., Converter={StaticResource showNameOrDefault}, ConverterParameter=text}" Margin="0,5"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridComboBoxColumn Header="Type" ItemsSource="{Binding Source={StaticResource memberTypeEnum}}" SelectedValueBinding="{Binding Type}" MinWidth="100"/>
-                <DataGridTemplateColumn Header="Items" IsReadOnly="True" CellStyle="{StaticResource middleAligned}" MinWidth="75" SortMemberPath="Items.Count">
+                <DataGridComboBoxColumn Header="Type" ItemsSource="{Binding Source={StaticResource itemTypeEnum}}" SelectedValueBinding="{Binding Type}" MinWidth="85"/>
+                <DataGridTextColumn Header="Title" Binding="{Binding Title}" MinWidth="190" SortMemberPath="Title"/>
+                <DataGridTextColumn Header="Author" Binding="{Binding Author}" MinWidth="160"/>
+                <DataGridTemplateColumn Header="Status" IsReadOnly="True" CellStyle="{StaticResource middleAligned}" MinWidth="140" SortMemberPath="Status.SortOrderText">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Grid HorizontalAlignment="Stretch">
-                                <TextBlock Text="{Binding Items.Count}" Padding="0,0,16,0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                                <ToggleButton Click="ExpandCollapseDetails" VerticalAlignment="Center" Grid.Column="1">
+                                <TextBlock Text="{Binding Status, Converter={StaticResource statusFormatter}}" Foreground="{Binding Status, Converter={StaticResource statusToColorConverter}}" FontWeight="SemiBold" Padding="0,0,16,0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                                <ToggleButton VerticalAlignment="Center" Click="ExpandCollapseDetails" Grid.Column="1">
                                     <ToggleButton.Style>
                                         <Style BasedOn="{StaticResource ExpanderDownHeaderStyle}" TargetType="{x:Type ToggleButton}">
                                             <Style.Setters>
                                                 <Setter Property="Foreground" Value="#FF707070"/>
                                             </Style.Setters>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Items.Count}" Value="0">
-                                                    <Setter Property="Visibility" Value="Hidden"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
                                         </Style>
                                     </ToggleButton.Style>
                                 </ToggleButton>
@@ -192,8 +156,8 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Header="Fee" Binding="{Binding Fee, StringFormat=c}" IsReadOnly="True" CellStyle="{StaticResource rightAligned}" MinWidth="70"/>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
 </UserControl>
+
