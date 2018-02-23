@@ -1,0 +1,76 @@
+﻿<UserControl x:Class="LibraryManager.View.HistoryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+             xmlns:converters="clr-namespace:LibraryManager.Converters"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <Grid.Resources>
+            <CollectionViewSource Source="{Binding History}" x:Key="historyView">
+                <CollectionViewSource.SortDescriptions>
+                    <scm:SortDescription PropertyName="Timestamp" Direction="Descending"/>
+                </CollectionViewSource.SortDescriptions>
+            </CollectionViewSource>
+            <converters:MemberNullTemplateSelector x:Key="MemberNullTemplateSelector">
+                <converters:MemberNullTemplateSelector.Null>
+                    <DataTemplate>
+                        <TextBlock Text="--"/>
+                    </DataTemplate>
+                </converters:MemberNullTemplateSelector.Null>
+                <converters:MemberNullTemplateSelector.NonNull>
+                    <DataTemplate>
+                        <Button Content="{Binding Member.Name}" Style="{StaticResource Link}" Click="MemberLinkClick" CommandParameter="{Binding}" HorizontalAlignment="Left"/>
+                    </DataTemplate>
+                </converters:MemberNullTemplateSelector.NonNull>
+            </converters:MemberNullTemplateSelector>
+            <converters:ActionTypeTemplateSelector x:Key="ActionTypeTemplateSelector">
+                <converters:ActionTypeTemplateSelector.Issuance>
+                    <DataTemplate>
+                        <iconPacks:PackIconModern Kind="LayoutExpandRight" Width="20" Height="20" Foreground="#1D449A"/>
+                    </DataTemplate>
+                </converters:ActionTypeTemplateSelector.Issuance>
+                <converters:ActionTypeTemplateSelector.Return>
+                    <DataTemplate>
+                        <iconPacks:PackIconModern Kind="LayoutExpandLeft" Width="20" Height="20" Foreground="#9A2E1D"/>
+                    </DataTemplate>
+                </converters:ActionTypeTemplateSelector.Return>
+                <converters:ActionTypeTemplateSelector.Reservation>
+                    <DataTemplate>
+                        <iconPacks:PackIconMaterial Kind="AccountBoxOutline" Width="20" Height="20" Foreground="#146F31"/>
+                    </DataTemplate>
+                </converters:ActionTypeTemplateSelector.Reservation>
+                <converters:ActionTypeTemplateSelector.Addition>
+                    <DataTemplate>
+                        <iconPacks:PackIconOcticons Kind="DiffAdded" Width="20" Height="20" Foreground="#6A1D9A"/>
+                    </DataTemplate>
+                </converters:ActionTypeTemplateSelector.Addition>
+            </converters:ActionTypeTemplateSelector>
+            <converters:ActionTypeToColorConverter x:Key="ActionTypeToColorConverter"/>
+        </Grid.Resources>
+        <DataGrid x:Name="dgHistory" ItemsSource="{Binding Source={StaticResource historyView}}" Style="{StaticResource LibraryDataGrid}" HeadersVisibility="Column" IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="  " Width="40" CellTemplateSelector="{StaticResource ActionTypeTemplateSelector}" CanUserResize="False"/>
+                <DataGridTextColumn Header="Timestamp" Binding="{Binding Timestamp}" SortDirection="Descending" IsReadOnly="True"/>
+                <DataGridTemplateColumn Header="Type" MinWidth="100" >
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Type}" FontWeight="Bold" Foreground="{Binding Path=., Converter={StaticResource ActionTypeToColorConverter}}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Item" IsReadOnly="True" MinWidth="170">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="{Binding Item.Title}" Style="{StaticResource Link}" Click="ItemLinkClick" CommandParameter="{Binding}" HorizontalAlignment="Left" FontStyle="Italic"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Member" IsReadOnly="True" CellTemplateSelector="{StaticResource MemberNullTemplateSelector}" MinWidth="120"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

@@ -20,8 +20,7 @@ namespace LibraryManager
         public void ForcePropertyChanged(string propertyName = null)
         {
             // If handler(s) exist(s) for the event, call them with the specified property name
-            var handler = PropertyChanged;
-            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         
         /// <summary>
@@ -31,6 +30,11 @@ namespace LibraryManager
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             ForcePropertyChanged(propertyName);
+        }
+
+        public bool HasHandlers()
+        {
+            return PropertyChanged == null ? false : true;
         }
     }
 }

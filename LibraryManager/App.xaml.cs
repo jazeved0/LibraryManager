@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
+﻿using LibraryManager.ViewModels;
+using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media;
 
 namespace LibraryManager
 {
@@ -17,34 +14,48 @@ namespace LibraryManager
         public static App Instance;
         public Configuration Config;
 
+        public const String SCHOOL_NAME = "East Hamilton High School";
+
         public App()
         {
             Instance = this;
             Config = new Configuration();
         }
 
-        public static DependencyObject FindChild(DependencyObject parent, Func<DependencyObject, bool> predicate)
+        private void Application_Exit(object sender, ExitEventArgs e)
         {
-            if (parent == null) return null;
+            // Cancel background tasks
+            MainWindowViewModel.Instance?.CancelBackgroundTasks();
+        }
 
-            int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
-            for (int i = 0; i < childrenCount; i++)
+        // The `onTick` method will be called periodically unless cancelled.
+        /// <summary>
+        /// Credit to SO User Erik
+        /// </summary>
+        /// <param name="onTick"></param>
+        /// <param name="dueTime"></param>
+        /// <param name="interval"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static async Task RunPeriodicAsync(Action onTick,
+                                                   TimeSpan dueTime,
+                                                   TimeSpan interval,
+                                                   CancellationToken token)
+        {
+            // Initial wait time before we begin the periodic loop.
+            if (dueTime > TimeSpan.Zero)
+                await Task.Delay(dueTime, token);
+
+            // Repeat this loop until cancelled.
+            while (!token.IsCancellationRequested)
             {
-                var child = VisualTreeHelper.GetChild(parent, i);
+                // Call our onTick function.
+                onTick?.Invoke();
 
-                if (predicate(child))
-                {
-                    return child;
-                }
-                else
-                {
-                    var foundChild = FindChild(child, predicate);
-                    if (foundChild != null)
-                        return foundChild;
-                }
+                // Wait to repeat again.
+                if (interval > TimeSpan.Zero)
+                    await Task.Delay(interval, token);
             }
-
-            return null;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using LibraryManager.Data.Item;
+using LibraryManager.ViewModels;
 using System.Windows.Controls;
 
 namespace LibraryManager.Controls

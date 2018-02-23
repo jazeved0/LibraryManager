@@ -1,5 +1,4 @@
-﻿using LibraryManager.Data;
-using LibraryManager.Data.Member;
+﻿using LibraryManager.Data.Member;
 using LibraryManager.Messenger;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;

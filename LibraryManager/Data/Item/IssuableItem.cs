@@ -8,11 +8,10 @@ namespace LibraryManager.Data.Item
     /// Data structure that represents a single (not neccessarily unique) issuable library item that can be shelved, issued, reserved, or made overdue.
     /// Extends NotifyPropertyChanged to allow DataBinding via the MVVM WPF structure.
     /// </summary>
-    public class IssuableItem : NotifyPropertyChanged
+    public class IssuableItem : LibraryObject, ICloneable
     {
         #region PrivateFields
-
-        private String _id;
+        
         private String _title;
         private String _author;
         private ItemType _type;
@@ -21,20 +20,6 @@ namespace LibraryManager.Data.Item
         #endregion
 
         #region Properties
-
-        /// <summary>
-        /// A unique identifier for the issuable item
-        /// </summary>
-        public String ID
-        {
-            get { return _id; }
-            set
-            {
-                if (value == _id) return;
-                _id = value;
-                OnPropertyChanged();
-            }
-        }
 
         /// <summary>
         /// The item's title
@@ -107,6 +92,16 @@ namespace LibraryManager.Data.Item
         private void StatusChanged(Object sender, PropertyChangedEventArgs e)
         {
             ForcePropertyChanged("Status");
+        }
+
+        public object Clone()
+        {
+            return new IssuableItem
+            {
+                Title = Title,
+                Author = Author,
+                Type = Type
+            };
         }
     }
 }

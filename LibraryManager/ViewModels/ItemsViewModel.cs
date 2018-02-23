@@ -1,6 +1,6 @@
-﻿using LibraryManager.Data;
-using LibraryManager.Data.Item;
+﻿using LibraryManager.Data.Item;
 using LibraryManager.Messenger;
+using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
@@ -27,6 +27,15 @@ namespace LibraryManager.ViewModels
         private void Items_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             ForcePropertyChanged("Items");
+        }
+
+        internal bool ContainsID(string proposedID)
+        {
+            foreach(IssuableItem item in Items)
+            {
+                if (item.ID.Equals(proposedID)) return true;
+            }
+            return false;
         }
     }
 }

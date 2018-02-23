@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LibraryManager.ViewModels;
+using System;
 using System.Diagnostics.Contracts;
 
 namespace LibraryManager.Data.Item.Status
@@ -115,12 +116,11 @@ namespace LibraryManager.Data.Item.Status
         {
             get
             {
-                // If the item has an owner
-                if (HasOwner)
+                // If the item has an owner and is overdue
+                if (HasOwner && Type == StatusType.Overdue)
                 {
                     // Return the configuration's specified overdue fee for the owner's type (Student or Teacher)
-                    return App.Instance.Config.GetOverdueFee(Owner.Type);
-
+                    return App.Instance.Config.GetOverdueFee(this);
                 }
                 // If not, then the status is not Overdue, so no fee exists
                 else return 0m;
@@ -137,9 +137,9 @@ namespace LibraryManager.Data.Item.Status
         }
 
         /// <summary>
-        /// Gets the remaining time that the item has before going through the type changes: [Issued -> Overdue] or [Reserved -> Shelved]
+        /// Gets the remaining time that the item has before going through the type changes: [Issued -> Overdue] or [Reserved -> Shelved] or Overdue
         /// Needs ForcePropertyChanged("Remainder") to be called each relevant interval for the bindings to update
-        /// Note: Can be negative if the current time is past the due date
+        /// Note: Can be negative if the current time is past the due date or the item is overdue
         /// </summary>
         [Pure]
         public TimeSpan Remainder
@@ -147,7 +147,7 @@ namespace LibraryManager.Data.Item.Status
             get
             {
                 // If the item is not in a valid state to have a remaining time, return a zero-time interval
-                if (!HasOwner || Type == StatusType.Overdue) return new TimeSpan();
+                if (!HasOwner) return new TimeSpan();
                 else
                 {
                     // Else, return the difference between the due date and the current DateTime
@@ -155,7 +155,7 @@ namespace LibraryManager.Data.Item.Status
                 }
             }
         }
-        
+
         /// <summary>
         /// Gets the text to use as a sortable and distinguishable property
         /// Used for sorting within ItemsView
@@ -178,9 +178,9 @@ namespace LibraryManager.Data.Item.Status
         }
 
         /// <summary>
-        /// Called each time a pertinent config value is changed by the user
+        /// Called each time a manual or automatic refresh has been scheduled
         /// </summary>
-        public void ConfigChanged()
+        public void UpdateStatus(bool forceBindingUpdates)
         {
             if (!HasOwner) return; // If the item has no owner, then no updates are needed (it's shelved)
 
@@ -199,6 +199,7 @@ namespace LibraryManager.Data.Item.Status
             }
             else
             {
+                if (!forceBindingUpdates) return;
                 // Update property bindings
                 ForcePropertyChanged("DueDate");
                 ForcePropertyChanged("Remainder");
@@ -212,6 +213,7 @@ namespace LibraryManager.Data.Item.Status
         /// <param name="to">The new owner of the IssuableItem</param>
         public void Issue(Member.Member to)
         {
+            MainWindowViewModel.Instance.HistoryVM.History.Add(new Data.Action.LoggedAction { Timestamp = DateTime.Now, Item = _item, Member = to, Type = Data.Action.ActionType.Issuance });
             Owner = to;
             Type = StatusType.Issued;
             InitialDate = DateTime.Now;
@@ -224,6 +226,7 @@ namespace LibraryManager.Data.Item.Status
         /// <param name="to"></param>
         public void Reserve(Member.Member to)
         {
+            MainWindowViewModel.Instance.HistoryVM.History.Add(new Data.Action.LoggedAction { Timestamp = DateTime.Now, Item = _item, Member = to, Type = Data.Action.ActionType.Reservation });
             Owner = to;
             Type = StatusType.Reserved;
             InitialDate = DateTime.Now;
@@ -235,6 +238,7 @@ namespace LibraryManager.Data.Item.Status
         /// </summary>
         public void CheckIn()
         {
+            MainWindowViewModel.Instance.HistoryVM.History.Add(new Data.Action.LoggedAction { Timestamp = DateTime.Now, Item = _item, Member = Owner, Type = Data.Action.ActionType.Return });
             InitialDate = DateTime.Now;
             Owner.Items.Remove(_item);
             Type = StatusType.Shelved;

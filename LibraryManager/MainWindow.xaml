@@ -4,44 +4,187 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:view="clr-namespace:LibraryManager.View"
         xmlns:local="clr-namespace:LibraryManager"
+        xmlns:converters="clr-namespace:LibraryManager.Converters"
+        xmlns:dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
         mc:Ignorable="d"
-        Title="Library Manager" Height="720" Width="1280"
-        Icon="Resource/libraryManagerIcon.png"
+        Title="Library Manager" Height="550" Width="800"
+        dialog:DialogParticipation.Register="{Binding}"
+        Icon="Resources/libraryManagerIcon.png"
         ShowIconOnTitleBar="True"
         ResizeMode="CanResizeWithGrip" IgnoreTaskbarOnMaximize="False" TitleCharacterCasing="Normal"
         GlowBrush="{Binding WindowTitleBrush, RelativeSource={RelativeSource Self}}" 
         NonActiveBorderBrush="{Binding WindowTitleBrush, RelativeSource={RelativeSource Self}}" 
         NonActiveGlowBrush="{Binding WindowTitleBrush, RelativeSource={RelativeSource Self}}" 
         NonActiveWindowTitleBrush="{Binding WindowTitleBrush, RelativeSource={RelativeSource Self}}"
-        Background="#FFFCFCFC"
-        d:DataContext="{d:DesignInstance local:MainWindowViewModel}">
+        Background="#FFFCFCFC">
     <Controls:MetroWindow.Resources>
         <Thickness x:Key="globalThickness">
             8,0
         </Thickness>
+        <converters:ColorFadeConverter x:Key="colorFadeConverter"/>
+        <Style x:Key="SmallTileStyle" TargetType="Controls:Tile">
+            <Setter Property="Width" Value="110" />
+            <Setter Property="Height" Value="110" />
+            <Setter Property="TitleFontSize" Value="13" />
+        </Style>
+        <Style x:Key="LargeTileStyle" TargetType="Controls:Tile">
+            <Setter Property="Width" Value="226" />
+            <Setter Property="Height" Value="110" />
+            <Setter Property="TitleFontSize" Value="13" />
+        </Style>
     </Controls:MetroWindow.Resources>
-
+    <Controls:MetroWindow.CommandBindings>
+        <CommandBinding Command="ApplicationCommands.Close"
+                        Executed="CloseCommandHandler"/>
+    </Controls:MetroWindow.CommandBindings>
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
         <!-- Main content pane -->
-        <Controls:MetroAnimatedSingleRowTabControl x:Name="MainTabControl" Grid.Row="1" Background="Transparent" Margin="4,0" SelectedIndex="{Binding OpenTab, Mode=TwoWay}">
+        <Controls:MetroAnimatedSingleRowTabControl x:Name="MainTabControl" Grid.Row="0" Background="Transparent" Margin="4,0" SelectedIndex="{Binding OpenTab, Mode=TwoWay}">
             <TabItem Header="dashboard">
-
+                <WrapPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,6,0,0" MaxWidth="700">
+                    <Controls:Tile Title="Issue item..." Style="{StaticResource SmallTileStyle}" Background="{StaticResource AccentColorBrush}" Click="IssueItemClickAsync">
+                        <Border Margin="0,0,0,15">
+                            <iconPacks:PackIconOcticons Kind="RepoPull" Width="50" Height="50"/>
+                        </Border>
+                    </Controls:Tile>
+                    <Controls:Tile Title="Return item..." Style="{StaticResource SmallTileStyle}" Background="{StaticResource AccentColorBrush2}" Click="ReturnItemClickAsync">
+                        <Border Margin="0,0,0,15">
+                            <iconPacks:PackIconOcticons Kind="RepoPush" Width="50" Height="50"/>
+                        </Border>
+                    </Controls:Tile>
+                    <Controls:Tile Title="Reserve item..." Style="{StaticResource SmallTileStyle}" Background="{StaticResource AccentColorBrush2}" Click="ReserveItemClickAsync">
+                        <Border Margin="0,0,0,15">
+                            <iconPacks:PackIconFontAwesome Kind="AddressBookRegular" Width="48" Height="48"/>
+                        </Border>
+                    </Controls:Tile>
+                    <Controls:Tile Title="Duplicate item..." Style="{StaticResource SmallTileStyle}" Background="{StaticResource AccentColorBrush}" Click="DuplicateItemClickAsync">
+                        <Border Margin="0,0,0,15">
+                            <iconPacks:PackIconOcticons Kind="RepoClone" Width="48" Height="48"/>
+                        </Border>
+                    </Controls:Tile>
+                    <Controls:Tile Title="Exit" Style="{StaticResource SmallTileStyle}" Background="{StaticResource AccentColorBrush2}" Command="ApplicationCommands.Close">
+                        <Border Margin="0,0,0,15">
+                            <iconPacks:PackIconMaterial Kind="CloseCircleOutline" Width="46" Height="46"/>
+                        </Border>
+                    </Controls:Tile>
+                    <Controls:Tile Title="Generate issuance report..." Style="{StaticResource LargeTileStyle}" Background="{StaticResource AccentColorBrush2}" Click="GenerateIssuanceReportClickAsync">
+                        <Border Margin="0,0,0,15">
+                            <iconPacks:PackIconMaterial Kind="FileChart" Width="46" Height="46"/>
+                        </Border>
+                    </Controls:Tile>
+                    <Controls:Tile Title="Generate fee report..." Style="{StaticResource LargeTileStyle}" Background="{StaticResource AccentColorBrush}" Click="GenerateFeeReportClickAsync">
+                        <Border Margin="0,0,0,15">
+                            <iconPacks:PackIconMaterial Kind="CashMultiple" Width="58" Height="58"/>
+                        </Border>
+                    </Controls:Tile>
+                </WrapPanel>
+                <TabItem.HeaderTemplate>
+                    <DataTemplate>
+                        <DockPanel LastChildFill="True">
+                            <iconPacks:PackIconOcticons Kind="Dashboard" VerticalAlignment="Bottom" Margin="0,0,6,6" Width="18" Height="18"/>
+                            <Label Padding="0" Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContentPresenter}}, Path=(TextElement.Foreground)}"
+                                               FontSize="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContentPresenter}}, Path=(TextElement.FontSize)}">
+                                dashboard
+                            </Label>
+                        </DockPanel>
+                    </DataTemplate>
+                </TabItem.HeaderTemplate>
             </TabItem>
             <TabItem Header="items">
                 <view:ItemsView DataContext="{Binding ItemsVM}" Margin="6,0"/>
+                <TabItem.HeaderTemplate>
+                    <DataTemplate>
+                        <DockPanel LastChildFill="True">
+                            <iconPacks:PackIconOcticons Kind="RepoClone" VerticalAlignment="Bottom" Margin="0,0,6,6" Width="18" Height="18"/>
+                            <Label Padding="0" Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContentPresenter}}, Path=(TextElement.Foreground)}"
+                                               FontSize="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContentPresenter}}, Path=(TextElement.FontSize)}">
+                                items
+                            </Label>
+                        </DockPanel>
+                    </DataTemplate>
+                </TabItem.HeaderTemplate>
             </TabItem>
             <TabItem Header="members">
                 <view:MembersView DataContext="{Binding MembersVM}" Margin="6,0"/>
+                <TabItem.HeaderTemplate>
+                    <DataTemplate>
+                        <DockPanel LastChildFill="True">
+                            <iconPacks:PackIconOcticons Kind="Organization" VerticalAlignment="Bottom" Margin="0,0,6,6" Width="18" Height="18"/>
+                            <Label Padding="0" Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContentPresenter}}, Path=(TextElement.Foreground)}"
+                                               FontSize="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContentPresenter}}, Path=(TextElement.FontSize)}">
+                                members
+                            </Label>
+                        </DockPanel>
+                    </DataTemplate>
+                </TabItem.HeaderTemplate>
             </TabItem>
             <TabItem Header="history">
-                
+                <view:HistoryView DataContext="{Binding HistoryVM}" Margin="6,0"/>
+                <TabItem.HeaderTemplate>
+                    <DataTemplate>
+                        <DockPanel LastChildFill="True">
+                            <iconPacks:PackIconOcticons Kind="Calendar" VerticalAlignment="Bottom" Margin="0,0,6,7" Width="18" Height="18"/>
+                            <Label Padding="0" Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContentPresenter}}, Path=(TextElement.Foreground)}"
+                                               FontSize="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContentPresenter}}, Path=(TextElement.FontSize)}">
+                                history
+                            </Label>
+                        </DockPanel>
+                    </DataTemplate>
+                </TabItem.HeaderTemplate>
             </TabItem>
             <TabItem Header="config">
                 <view:ConfigView Margin="6,0"/>
+                <TabItem.HeaderTemplate>
+                    <DataTemplate>
+                        <DockPanel LastChildFill="True">
+                            <iconPacks:PackIconOcticons Kind="Tools" VerticalAlignment="Bottom" Margin="0,0,6,6" Width="18" Height="18"/>
+                            <Label Padding="0" Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContentPresenter}}, Path=(TextElement.Foreground)}"
+                                               FontSize="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContentPresenter}}, Path=(TextElement.FontSize)}">
+                                configuration
+                            </Label>
+                        </DockPanel>
+                    </DataTemplate>
+                </TabItem.HeaderTemplate>
             </TabItem>
         </Controls:MetroAnimatedSingleRowTabControl>
+        <StatusBar Grid.Row="1" Padding="9 1 1 1" >
+            <StatusBarItem Content="{Binding Status}"/>
+            <Controls:ProgressRing IsActive="{Binding IsRefreshing}" Foreground="White" Height="9" Width="9" Margin="4,0,0,0" IsLarge="False" EllipseDiameterScale="1.2" />
+            <StatusBarItem HorizontalAlignment="Right" Margin="0 0 30 0">
+                <StackPanel Orientation="Horizontal" Grid.Column="1">
+                    <Rectangle Width="14"
+                   Height="14"
+                   Fill="White"
+                   Margin="7 0">
+                        <Rectangle.OpacityMask>
+                            <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_clock}" />
+                        </Rectangle.OpacityMask>
+                        <Rectangle.Effect>
+                            <DropShadowEffect ShadowDepth="0" Opacity="0.35" BlurRadius="3"/>
+                        </Rectangle.Effect>
+                        <Rectangle.Style>
+                            <Style TargetType="Rectangle">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding RefreshInfoText}" Value="">
+                                        <DataTrigger.Setters>
+                                            <Setter Property="Visibility" Value="Hidden"/>
+                                        </DataTrigger.Setters>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Rectangle.Style>
+                    </Rectangle>
+                    <TextBlock Text="{Binding RefreshInfoText}"/>
+                </StackPanel>
+            </StatusBarItem>
+        </StatusBar>
     </Grid>
 
     <!-- Custom icon template to add window-wide padding -->
@@ -62,9 +205,17 @@
 
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
-            <Label Margin="0 0 2 0"
+            <Label x:Name="SchoolLabel" Margin="0 0 2 0"
                    VerticalAlignment="Center"
-                   Content="Beast Bamilton High School" Foreground="{StaticResource IdealForegroundColorBrush}" />
+                   Foreground="{StaticResource IdealForegroundColorBrush}" />
+            <Button IsEnabled="{Binding CanRefresh, Mode=OneWay}" Click="RefreshClick" Foreground="White">
+                <StackPanel Orientation="Horizontal">
+                    <iconPacks:PackIconOcticons Kind="Sync" Spin="{Binding IsRefreshing}" Width="14" Height="14"/>
+                    <TextBlock Margin="7 0 0 0"
+                   VerticalAlignment="Center"
+                   Text="Refresh"/>
+                </StackPanel>
+            </Button>
         </Controls:WindowCommands>
     </Controls:MetroWindow.RightWindowCommands>
 </Controls:MetroWindow>

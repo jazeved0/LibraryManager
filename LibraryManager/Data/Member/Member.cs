@@ -10,11 +10,10 @@ namespace LibraryManager.Data.Member
     /// Data structure that represents a single Library member that can have items issued or reserved to.
     /// Extends NotifyPropertyChanged to allow DataBinding via the MVVM WPF structure.
     /// </summary>
-    public class Member : NotifyPropertyChanged
+    public class Member : LibraryObject
     {
         #region PrivateFields
-
-        private string _id;
+        
         private string _name;
         private ObservableCollection<IssuableItem> _items;
         private MemberType _type;
@@ -22,20 +21,6 @@ namespace LibraryManager.Data.Member
         #endregion
 
         #region Properties
-
-        /// <summary>
-        /// The Unique identifier for the library member
-        /// </summary>
-        public string ID
-        {
-            get { return _id; }
-            set
-            {
-                if (value == _id) return;
-                _id = value;
-                OnPropertyChanged();
-            }
-        }
 
         /// <summary>
         /// The full name of the library member, as printed on their card
@@ -82,18 +67,42 @@ namespace LibraryManager.Data.Member
         {
             get
             {
-                decimal fee = 0m;
+                decimal _fee = 0m;
                 // Loop through each item
                 foreach(IssuableItem item in Items)
                 {
-                    // If the item is overdue,
-                    if(item.Status.Type == ItemStatus.StatusType.Overdue)
-                    {
-                        // Add its fee to the overall library member's fee
-                        fee += item.Status.Fee;
-                    }
+                    // Add its fee to the overall library member's fee
+                    _fee += item.Status.Fee;
                 }
-                return fee;
+                return _fee;
+            }
+        }
+
+        [Pure]
+        public int IssuanceCount
+        {
+            get
+            {
+                int count = 0;
+                foreach (IssuableItem item in Items)
+                {
+                    if (item.Status.Type == ItemStatus.StatusType.Issued || item.Status.Type == ItemStatus.StatusType.Overdue) ++count;
+                }
+                return count;
+            }
+        }
+
+        [Pure]
+        public int ReservationCount
+        {
+            get
+            {
+                int count = 0;
+                foreach (IssuableItem item in Items)
+                {
+                    if (item.Status.Type == ItemStatus.StatusType.Reserved) ++count;
+                }
+                return count;
             }
         }
 

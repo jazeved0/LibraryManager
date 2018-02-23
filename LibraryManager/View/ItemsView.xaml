@@ -8,129 +8,38 @@
              xmlns:controls="clr-namespace:LibraryManager.Controls"
              xmlns:core="clr-namespace:System;assembly=mscorlib"
              xmlns:item="clr-namespace:LibraryManager.Data.Item"
-             xmlns:LibraryManager="clr-namespace:LibraryManager"
-             xmlns:Custom="http://metro.mahapps.com/winfx/xaml/controls" 
+             xmlns:validation="clr-namespace:LibraryManager.Validation"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="800">
-    <UserControl.Resources>
-        <converters:ColorFadeConverter x:Key="colorFadeConverter"/>
-        <converters:ShowNameOrDefault x:Key="showNameOrDefault"/>
-        <converters:StatusFormatter x:Key="statusFormatter"/>
-        <converters:StatusToColorConverter x:Key="statusToColorConverter"/>
-        <LibraryManager:BindingProxy x:Key="highlightBrush" Data="{DynamicResource MetroDataGrid.MouseOverHighlightBrush}"/>
-        <CollectionViewSource Source="{Binding Items}" x:Key="itemView">
-            <CollectionViewSource.SortDescriptions>
-                <scm:SortDescription PropertyName="ID"/>
-            </CollectionViewSource.SortDescriptions>
-            <CollectionViewSource.GroupDescriptions>
-                <PropertyGroupDescription PropertyName="Type"/>
-            </CollectionViewSource.GroupDescriptions>
-        </CollectionViewSource>
-        <Style x:Key="middleAligned" TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource MetroDataGridCell}">
-            <Setter Property="TextBlock.TextAlignment" Value="Center"/>
-            <Setter Property="Padding" Value="8,0"/>
-        </Style>
-        <Style x:Key="rightAligned" TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource MetroDataGridCell}">
-            <Setter Property="TextBlock.TextAlignment" Value="Right"/>
-            <Setter Property="Padding" Value="8,0"/>
-        </Style>
-        <ObjectDataProvider x:Key="itemTypeEnum" MethodName="GetValues" ObjectType="{x:Type core:Enum}">
-            <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="item:ItemType"/>
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>
-    </UserControl.Resources>
-    <Grid Margin="0,4,0,0" DataContext="{Binding Source={StaticResource itemTypeEnum}}">
-        <!-- TODO Filtering and Searching -->
-        <!-- TODO Real SQL Server Binding -->
-        <DataGrid Grid.Row="1" x:Name="dgItems"  ItemsSource="{Binding Source={StaticResource itemView}}" AlternationCount="2" Background="#00000000" AutoGenerateColumns="False" RowDetailsVisibilityMode="Collapsed" Custom:DataGridHelper.EnableCellEditAssist="True" GridLinesVisibility="All" CellEditEnding="dgItems_CellEditEnding" LoadingRow="dgItems_LoadingRow" Loaded="dgItems_Loaded">
-            <DataGrid.CellStyle>
-                <Style TargetType="DataGridCell" BasedOn="{StaticResource MetroDataGridCell}">
-                    <Setter Property="Padding" Value="8,0"/>
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="{x:Type DataGridCell}">
-                                <Border Padding="{TemplateBinding Padding}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
-                                    <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Center"/>
-                                </Border>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </DataGrid.CellStyle>
-            <DataGrid.GroupStyle>
-                <GroupStyle>
-                    <GroupStyle.ContainerStyle>
-                        <Style TargetType="{x:Type GroupItem}">
-                            <Setter Property="Margin" Value="0,0,0,5"/>
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="{x:Type GroupItem}">
-                                        <Expander IsExpanded="True" Foreground="{StaticResource IdealForegroundColorBrush}" BorderThickness="1,1,1,5">
-                                            <Expander.Header>
-                                                <StackPanel Orientation="Horizontal" Margin="4,2,0,0">
-                                                    <TextBlock FontWeight="Bold" Text="{Binding Name}"/>
-                                                    <TextBlock FontWeight="Bold" Text="s:   "/>
-                                                    <TextBlock FontWeight="Bold" Text="{Binding ItemCount}"/>
-                                                </StackPanel>
-                                            </Expander.Header>
-                                            <ItemsPresenter />
-                                        </Expander>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </GroupStyle.ContainerStyle>
-                </GroupStyle>
-            </DataGrid.GroupStyle>
-            <DataGrid.RowStyle>
-                <Style TargetType="{x:Type DataGridRow}">
-                    <Style.Setters>
-                        <Setter Property="Foreground" Value="Black"/>
-                    </Style.Setters>
-                    <Style.Triggers>
-                        <Trigger Property="ItemsControl.AlternationIndex" Value="0">
-                            <Setter Property="Background" Value="#00000000"/>
-                        </Trigger>
-                        <Trigger Property="ItemsControl.AlternationIndex" Value="1">
-                            <Setter Property="Background" Value="#05000000"/>
-                        </Trigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="ItemsControl.AlternationIndex" Value="0"/>
-                                <Condition Property="IsMouseOver" Value="True"/>
-                            </MultiTrigger.Conditions>
-                            <Setter Property="Background" Value="{Binding Data, ConverterParameter=0.2, Converter={StaticResource colorFadeConverter}, Source={StaticResource highlightBrush}}"/>
-                        </MultiTrigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="ItemsControl.AlternationIndex" Value="1"/>
-                                <Condition Property="IsMouseOver" Value="True"/>
-                            </MultiTrigger.Conditions>
-                            <Setter Property="Background" Value="{Binding Data, ConverterParameter=0.3, Converter={StaticResource colorFadeConverter}, Source={StaticResource highlightBrush}}"/>
-                        </MultiTrigger>
-                        <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Background" Value="{Binding Data, ConverterParameter=0.87, Converter={StaticResource colorFadeConverter}, Source={StaticResource highlightBrush}}"/>
-                        </Trigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="IsSelected" Value="True"/>
-                                <Condition Property="IsMouseOver" Value="True"/>
-                            </MultiTrigger.Conditions>
-                            <Setter Property="Background" Value="{Binding Data, ConverterParameter=1, Converter={StaticResource colorFadeConverter}, Source={StaticResource highlightBrush}}"/>
-                        </MultiTrigger>
-                    </Style.Triggers>
-                </Style>
-            </DataGrid.RowStyle>
-            <DataGrid.RowDetailsTemplate>
-                <DataTemplate>
-                    <Border BorderThickness="0" Padding="4">
-                        <controls:ItemStatusDisplay DataContext="{Binding Path=Status}" Margin="20,6,0,6"/>
-                    </Border>
-                </DataTemplate>
-            </DataGrid.RowDetailsTemplate>
+    <Grid>
+        <Grid.Resources>
+            <CollectionViewSource Source="{Binding Items}" x:Key="itemView">
+                <CollectionViewSource.SortDescriptions>
+                    <scm:SortDescription PropertyName="ID"/>
+                </CollectionViewSource.SortDescriptions>
+                <CollectionViewSource.GroupDescriptions>
+                    <PropertyGroupDescription PropertyName="Type"/>
+                </CollectionViewSource.GroupDescriptions>
+            </CollectionViewSource>
+            <converters:StatusFormatter x:Key="statusFormatter"/>
+            <converters:StatusToColorConverter x:Key="statusToColorConverter"/>
+            <ObjectDataProvider x:Key="itemTypeEnum" MethodName="GetValues" ObjectType="{x:Type core:Enum}">
+                <ObjectDataProvider.MethodParameters>
+                    <x:Type TypeName="item:ItemType"/>
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
+        </Grid.Resources>
+        <DataGrid x:Name="dgItems" ItemsSource="{Binding Source={StaticResource itemView}}" Style="{StaticResource LibraryDataGrid}" PreviewKeyDown="dgItems_PreviewKeyDown">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" Binding="{Binding ID}" SortDirection="Ascending" MinWidth="65"/>
+                <DataGridTextColumn Header="ID" MinWidth="65" SortDirection="Ascending">
+                    <DataGridTextColumn.Binding>
+                        <Binding Path="ID" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus">
+                            <Binding.ValidationRules>
+                                <validation:ItemUniqueIDRule CurrentCollection="{StaticResource itemView}" ValidationStep="CommittedValue"/>
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </DataGridTextColumn.Binding>
+                </DataGridTextColumn>
                 <DataGridComboBoxColumn Header="Type" ItemsSource="{Binding Source={StaticResource itemTypeEnum}}" SelectedValueBinding="{Binding Type}" MinWidth="85"/>
                 <DataGridTextColumn Header="Title" Binding="{Binding Title}" MinWidth="190" SortMemberPath="Title"/>
                 <DataGridTextColumn Header="Author" Binding="{Binding Author}" MinWidth="160"/>
@@ -157,7 +66,38 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
+            <DataGrid.RowDetailsTemplate>
+                <DataTemplate>
+                    <Border BorderThickness="0" Padding="4">
+                        <controls:ItemStatusDisplay DataContext="{Binding Path=Status}" Margin="20,6,0,6"/>
+                    </Border>
+                </DataTemplate>
+            </DataGrid.RowDetailsTemplate>
+            <DataGrid.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.ContainerStyle>
+                        <Style TargetType="{x:Type GroupItem}">
+                            <Setter Property="Margin" Value="0,0,0,5"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type GroupItem}">
+                                        <Expander IsExpanded="True" Foreground="{StaticResource IdealForegroundColorBrush}" BorderThickness="1,1,1,5">
+                                            <Expander.Header>
+                                                <StackPanel Orientation="Horizontal" Margin="4,2,0,0">
+                                                    <TextBlock FontWeight="Bold" Text="{Binding Name}"/>
+                                                    <TextBlock FontWeight="Bold" Text="s:   "/>
+                                                    <TextBlock FontWeight="Bold" Text="{Binding ItemCount}"/>
+                                                </StackPanel>
+                                            </Expander.Header>
+                                            <ItemsPresenter />
+                                        </Expander>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </GroupStyle.ContainerStyle>
+                </GroupStyle>
+            </DataGrid.GroupStyle>
         </DataGrid>
     </Grid>
 </UserControl>
-

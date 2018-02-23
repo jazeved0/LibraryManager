@@ -1,5 +1,4 @@
-﻿using LibraryManager.Data;
-using System;
+﻿using System;
 
 namespace LibraryManager.Messenger
 {
@@ -9,11 +8,7 @@ namespace LibraryManager.Messenger
 
         public void OnSelectItem(T newItem)
         {
-            EventHandler<SelectItemEventArgs> handler = SelectItem;
-            if(handler != null)
-            {
-                handler(this, new SelectItemEventArgs(newItem));
-            }
+            SelectItem?.Invoke(this, new SelectItemEventArgs(newItem));
         }
 
         public class SelectItemEventArgs : EventArgs

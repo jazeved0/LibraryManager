@@ -1,0 +1,41 @@
+﻿<UserControl x:Class="LibraryManager.Controls.SelectItem"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="46"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Text="Title: " Margin="0,0,8,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+        <TextBox Grid.Column="1" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" MinWidth="190" Style="{StaticResource FilterTextBox}"/>
+        <Border Grid.Column="1" Grid.Row="1" Margin="0,8,0,6" BorderThickness="1,0,1,1" VerticalAlignment="Top" BorderBrush="#FFBBBBBB">
+            <ListView ItemsSource="{Binding FilteredItems}" Height="180" SelectedItem="{Binding SelectedItem}" SelectionMode="Single">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock x:Name="TitleDisplay" Text="{Binding Title}"/>
+                            <TextBlock x:Name="ReservedStatusTag" Text="" Margin="6,0,0,0" FontStyle="Italic"/>
+                        </StackPanel>
+                        <DataTemplate.Triggers>
+                            <DataTrigger Binding="{Binding Status.Type}" Value="Reserved">
+                                <DataTrigger.Setters>
+                                    <Setter Property="FontWeight" TargetName="TitleDisplay" Value="Bold"/>
+                                    <Setter Property="FontStyle" TargetName="TitleDisplay" Value="Italic"/>
+                                    <Setter Property="Text" TargetName="ReservedStatusTag" Value="(Reserved)"/>
+                                </DataTrigger.Setters>
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Border>
+    </Grid>
+</UserControl>

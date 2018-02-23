@@ -1,82 +1,140 @@
-﻿using LibraryManager.Data.Item;
+﻿using LibraryManager.Data.Item.Status;
 using LibraryManager.Data.Member;
+using LibraryManager.ViewModels;
 using System;
+using System.Collections.Generic;
 using static LibraryManager.Data.Item.Status.ItemStatus;
 
 namespace LibraryManager
 {
     public class Configuration
     {
-        private int _studentIssuanceMaxDuration = 14;
-        private int _studentReservationMaxDuration = 4;
-        private int _studentIssuanceMax = 2;
-
-        private int _teacherIssuanceMaxDuration = 27;
-        private int _teacherReservationMaxDuration = 7;
-        private int _teacherIssuanceMax = 5;
-
-        public int StudentIssuanceMaxDuration
+        public struct Entry<T>
         {
-            get { return _studentIssuanceMaxDuration; }
-            internal set { _studentIssuanceMaxDuration = value; }
+            public String ID { get; internal set; }
+            public String Label { get; internal set; }
+            public String Units { get; internal set; }
+            public T DefaultValue { get; internal set; }
+            public Entry(String id, String label, T defaultValue, String units = "")
+            {
+                ID = id;
+                Label = label;
+                Units = units;
+                DefaultValue = defaultValue;
+            }
         }
 
-        public int StudentReservationMaxDuration
+        public class Value<T> : NotifyPropertyChanged, ICloneable where T : IEquatable<T>
         {
-            get { return _studentReservationMaxDuration; }
-            internal set { _studentReservationMaxDuration = value; }
+            private T _currentValue;
+
+            public T CurrentValue
+            {
+                get { return _currentValue; }
+                set
+                {
+                    if (_currentValue.Equals(value)) return;
+                    _currentValue = value;
+                    ForcePropertyChanged();
+                }
+            }
+            public Entry<T> Entry { get; internal set; }
+            public Value(Entry<T> correspondingEntry, T startingValue)
+            {
+                CurrentValue = startingValue;
+                Entry = correspondingEntry;
+            }
+
+            public object Clone()
+            {
+                return new Value<T>(Entry, CurrentValue);
+            }
         }
 
-        public int StudentIssuanceMax
+        public IList<Entry<ushort>> DiscreteEntries;
+        public IList<Entry<decimal>> DecimalEntries;
+        
+        public IDictionary<MemberType, Dictionary<String, Value<ushort>>> DiscreteValues { get; internal set; }
+        public IDictionary<MemberType, Dictionary<String, Value<decimal>>> DecimalValues { get; internal set; }
+
+        public Configuration()
         {
-            get { return _studentIssuanceMax; }
-            internal set { _studentIssuanceMax = value; }
+            DiscreteEntries = new List<Entry<ushort>>();
+            DecimalEntries = new List<Entry<decimal>>();
+            DiscreteValues = new Dictionary<MemberType, Dictionary<String, Value<ushort>>>();
+            DecimalValues = new Dictionary<MemberType, Dictionary<String, Value<decimal>>>();
+
+            // Initialize group (membertype) config dictionaries
+            foreach (MemberType type in Enum.GetValues(typeof(MemberType)))
+            {
+                DiscreteValues.Add(type, new Dictionary<String, Value<ushort>>());
+                DecimalValues.Add(type, new Dictionary<String, Value<decimal>>());
+            }
+
+            RegisterEntries();
         }
 
-        public int TeacherIssuanceMax
+        private void RegisterEntries()
         {
-            get { return _teacherIssuanceMax; }
-            internal set { _teacherIssuanceMax = value; }
+            RegisterDiscreteEntry("issuance_max_duration", "Maximum check-out duration", "days", 14);
+            RegisterDiscreteEntry("reservation_max_duration", "Reservation duration", "days", 5);
+            RegisterDiscreteEntry("issuance_max", "Maximum simultaneous check-outs", "items", 3);
+            RegisterDiscreteEntry("reservation_max", "Maximum simultaneous reservations", "items", 2);
+            RegisterDecimalEntry("max_fee", "Maximum overdue fee", "USD", 1.5m);
         }
 
-        public int TeacherReservationMaxDuration
+        private void RegisterDiscreteEntry(String id, String label, String units, ushort defaultValue = 0)
         {
-            get { return _teacherReservationMaxDuration; }
-            internal set { _teacherReservationMaxDuration = value; }
+            Entry<ushort> entry = new Entry<ushort>(id, label, defaultValue, units);
+            DiscreteEntries.Add(entry);
+            foreach(MemberType type in Enum.GetValues(typeof(MemberType)))
+            {
+                DiscreteValues[type].Add(id, new Value<ushort>(entry, defaultValue));
+            }
         }
 
-        public int TeacherIssuanceMaxDuration
+        private void RegisterDecimalEntry(String id, String label, String units, decimal defaultValue = 0m)
         {
-            get { return _teacherIssuanceMaxDuration; }
-            internal set { _teacherIssuanceMaxDuration = value; }
+            Entry<decimal> entry = new Entry<decimal>(id, label, defaultValue, units);
+            DecimalEntries.Add(entry);
+            foreach (MemberType type in Enum.GetValues(typeof(MemberType)))
+            {
+                DecimalValues[type].Add(id, new Value<decimal>(entry, defaultValue));
+            }
         }
 
         public void UpdateDependencies()
         {
-            foreach(IssuableItem item in MainWindowViewModel.Instance.ItemsVM.Items)
-            {
-                // TODO Optimize based on which properties changed
-                item.Status.ConfigChanged();
-            }
+            MainWindowViewModel.Instance.Refresh();
         }
 
         public TimeSpan GetMaxDuration(StatusType statusType, MemberType memberType)
         {
-            if (memberType == MemberType.Student)
+            String idPrefix = "";
+            if (statusType == StatusType.Reserved) idPrefix = "reservation";
+            else idPrefix = "issuance";
+            int maxDuration = DiscreteValues[memberType][idPrefix + "_max_duration"].CurrentValue;
+            return new TimeSpan(maxDuration, 0, 0, 0);
+        }
+
+        public decimal GetOverdueFee(ItemStatus item)
+        {
+            if (item.Type != StatusType.Overdue && item.Remainder.Milliseconds >= 0) return 0m;
+            const decimal feeDecayHalfLife = 7m; // days
+            decimal maxOverdueFee = DecimalValues[item.Owner.Type]["max_fee"].CurrentValue;
+            decimal a = maxOverdueFee / (2m * feeDecayHalfLife); // linear growth slope
+            decimal days = (decimal) -item.Remainder.TotalDays;
+            if (days <= feeDecayHalfLife)
             {
-                if(statusType == StatusType.Issued) return new TimeSpan(StudentIssuanceMaxDuration, 0, 0, 0);
-                else return new TimeSpan(StudentReservationMaxDuration, 0, 0, 0);
+                // Use linear growth
+                return a * days;
             }
             else
             {
-                if (statusType == StatusType.Issued) return new TimeSpan(TeacherIssuanceMaxDuration, 0, 0, 0);
-                else return new TimeSpan(TeacherReservationMaxDuration, 0, 0, 0);
+                // Use negative exponential falloff
+                decimal b = (-2m * maxOverdueFee * maxOverdueFee) / (8m * a); // negative exponential falloff coefficient
+                return b / days + maxOverdueFee;
             }
-        }
-
-        internal decimal GetOverdueFee(MemberType type2)
-        {
-            throw new NotImplementedException();
         }
     }
 }

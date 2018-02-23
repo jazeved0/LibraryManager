@@ -64,12 +64,27 @@
 
             <!-- ItemStatus.Type == ItemStatus.StatusType.Overdue -->
             <DataTemplate x:Key="overdueTemplate" DataType="{x:Type itemStatus:ItemStatus}">
-                <!-- TODO -->
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Overdue with: " FontWeight="SemiBold"/>
+                    <Button HorizontalAlignment="Center" Click="Hyperlink_Click" Style="{StaticResource Link}" Content="{Binding Owner.Name}" TextBlock.FontWeight="SemiBold"/>
+
+                    <TextBlock Text=" (" FontStyle="Italic"/>
+                    <TextBlock Text="{Binding Owner.Type}" FontStyle="Italic"/>
+                    <TextBlock Text=")" FontStyle="Italic"/>
+                    <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="6,2"/>
+
+                    <TextBlock Text="Overdue since: "/>
+                    <TextBlock Text="{Binding DueDate}"/>
+                    <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="6,2"/>
+
+                    <TextBlock Text="Fee incurred: " FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding Fee, StringFormat={}{0:C}}" FontWeight="SemiBold"/>
+                </StackPanel>
             </DataTemplate>
 
             <!-- ItemStatus.Type == ItemStatus.StatusType.Shelved -->
             <DataTemplate x:Key="shelvedTemplate" DataType="{x:Type itemStatus:ItemStatus}">
-                <!-- Display Nothing -->
+                <TextBlock Text="Shelved" FontWeight="SemiBold" FontStyle="Italic"/>
             </DataTemplate>
         </Grid.Resources>
         
