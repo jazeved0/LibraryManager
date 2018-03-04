@@ -9,7 +9,7 @@ namespace LibraryManager.ViewModels.Dialogs
 
         protected override void AddPages()
         {
-            PageViewModels.Add(new SelectItemViewModel(x => x.Status.Type == Data.Item.Status.ItemStatus.StatusType.Issued));
+            PageViewModels.Add(new SelectItemViewModel(x => x.Status.Type == Data.Item.Status.ItemStatus.StatusType.Issued || x.Status.Type == Data.Item.Status.ItemStatus.StatusType.Overdue));
         }
 
         protected override void Complete()

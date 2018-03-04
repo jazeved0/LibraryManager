@@ -3,6 +3,7 @@ using iTextSharp.text.pdf;
 using LibraryManager.Reports;
 using LibraryManager.ViewModels.Pages;
 using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace LibraryManager.ViewModels.Dialogs
@@ -28,6 +29,10 @@ namespace LibraryManager.ViewModels.Dialogs
                     IssuanceReportGenerator.BuildPDF(doc, writer);
                 }
                 doc.Close();
+
+                // Open file if it was created successfully
+                if (!File.Exists(path)) return;
+                Process.Start(path);
             }
             catch (Exception)
             {

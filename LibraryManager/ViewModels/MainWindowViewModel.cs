@@ -127,6 +127,12 @@ namespace LibraryManager.ViewModels
                 {
                     if (obj is IssuableItem) ReleaseDependencies(obj as IssuableItem);
                 }
+            } else if(e.Action == NotifyCollectionChangedAction.Add)
+            {
+                foreach (object obj in e.NewItems)
+                {
+                    HistoryVM.History.Add(new Data.Action.LoggedAction() { Item = obj as IssuableItem, Member = null, Type = Data.Action.ActionType.Addition, Timestamp = DateTime.Now });
+                }
             }
         }
 

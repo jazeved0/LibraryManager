@@ -114,7 +114,7 @@ namespace LibraryManager
         private IssuableItem CreateItem(ItemType type, string id, string title, string author)
         {
             IssuableItem item = new IssuableItem() { Type = type, ID = id, Title = title, Author = author };
-            MainWindowViewModel.Instance.HistoryVM.History.Add(new LoggedAction { Item = item, Member = null, Type = ActionType.Addition });
+            MainWindowViewModel.Instance.HistoryVM.History.Add(new LoggedAction { Item = item, Member = null, Type = ActionType.Addition, Timestamp = DateTime.Now });
             return item;
         }
 
