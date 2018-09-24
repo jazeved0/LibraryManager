@@ -7,7 +7,9 @@ Library Manager is a client database program designed to manage the issuance of 
 [Specific Requirements](https://web.archive.org/web/20180217192136im_/http://www.fbla-pbl.org:80/competitive-event/coding-programming/)
 > #### **Coding & Programming**
 > **Topic**: Develop a database program to manage the issuance of books at a school library. Give the school a name. The program must be able to complete a minimum of the following tasks:
+> 
 > **Category**: Prejudged Projects & Presentation
+> 
 > **Type**: Individual
 > * Track student and teacher names with ability to enter/view/edit names.
 > * Track the issuance of books for a student or teacher.
