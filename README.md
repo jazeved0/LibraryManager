@@ -1,6 +1,6 @@
 # LibraryManager
 
-![Screen upon startup](https://i.imgur.com/IUYPNxG.png)
+![Screen upon startup](https://i.imgur.com/DcIdyZC.png)
 *Main view upon startup*
 
 Library Manager is a client database program designed to manage the issuance of books for a school library. With features like managing history, adding and removing items, and a system for reserving books for varying durations. The project as a whole is a component of a submission into the Future Business Leaders of America's *Coding & Programming* competition, the specific requirements for which are listed below.
