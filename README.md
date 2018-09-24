@@ -15,7 +15,7 @@ Library Manager is a client database program designed to manage the issuance of 
 > * Generate/print weekly report to show books issued to whom and number of days leading to the due date return.
 > * Generate/print weekly report of detail of fines (when book not returned on time).
 
-![Screen upon startup]([img]https://i.imgur.com/IUYPNxG.png[/img])
+![Screen upon startup](https://i.imgur.com/IUYPNxG.png)
 *Main view upon startup*
 
 ## Underlying Architecture
