@@ -15,7 +15,8 @@ Internally, Library Managaer takes advantage of Microsoft's flagship .NET framew
 ## Documentation
 
 Extensible documentation was developed via LaTeX in order to explain each feature of the program, and is availible as a [PDF document](https://drive.google.com/open?id=1rzvxD1XwVbWNX5nE0kkMXI031g4EwGW_).
-<img src="https://i.imgur.com/NC5QYGQ.png" alt="documentation" width="277" height="300" border="10" />
+
+<a href="https://drive.google.com/open?id=1rzvxD1XwVbWNX5nE0kkMXI031g4EwGW_" target="_blank"><img src="https://i.imgur.com/NC5QYGQ.png" alt="documentation" width="277" height="300" border="10" /></a>
 
 ## Design Process
 
