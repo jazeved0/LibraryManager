@@ -22,3 +22,9 @@ Extensible documentation was developed via LaTeX in order to explain each featur
 
 A brief slideshow discussing the development of the project has been created, and is available below.
 <a href="https://docs.google.com/presentation/d/e/2PACX-1vTGNy98lkIgXEggQ311Q4-lEVoktZXNi6ZJbzeMykYx1stRzgmh1ap6npJRz_zBeCNXJ6MNUN8nVQ-w/pub?start=false&loop=false&delayms=3000" target="_blank"><img src="https://i.imgur.com/7RM6kRB.png" alt="slideshow" width="400" height="224" border="10" /></a>
+
+## Open Source External Packages
+
+* [ControlsEx v3.0.2.4](https://github.com/ControlzEx/ControlzEx) by Jan Karger, Bastian Schmidt, and James Willock: provides useful UI controls and styling with which to build the application frontend
+* [iTextSharp v5.5.13](https://github.com/itext/itextsharp) by Bruno Lowagie, Paulo Soares, et al: Open-source framework for PDF creation in C#; used for generating reports
+* [MahApps.Metro v1.5.0](https://mahapps.com/) by Jan Karger, Dennis Daume, Brenden Forster, Paul Jenkins, Jake Ginnivan, and Alex Mitchel: provides UI styling for a majority of the elements in the application front-end in order to conform to Microsoft's Metro design paradigm within WPF applications
