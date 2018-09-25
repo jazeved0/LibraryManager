@@ -2,7 +2,7 @@
 
 ![Screen upon startup](https://i.imgur.com/DcIdyZC.png)
 
-Library Manager is a client database program designed to manage the issuance of books for a school library. With features like managing history, adding and removing items, and a system for reserving books for varying durations. The project as a whole is a component of a submission into the Future Business Leaders of America's *Coding & Programming* competition, the specific requirements for which were listed [on their website (archived)](https://web.archive.org/web/20180217192136im_/http://www.fbla-pbl.org:80/competitive-event/coding-programming/). A functioning copy is [available here](https://drive.google.com/open?id=1AMA78FJQyUQVBUjYxqNNe8dfbLri5gqG) (runnable on the .NET runtime).
+Library Manager is a client database program designed to manage the issuance of books for a school library. With features like managing history, adding and removing items, and a system for reserving books for varying durations. The project as a whole is a component of a submission into the Future Business Leaders of America's *Coding & Programming* competition, the specific requirements for which were listed [on their website (archived)](https://web.archive.org/web/20180217192136im_/http://www.fbla-pbl.org:80/competitive-event/coding-programming/). A functioning copy is [available here](https://github.com/jazevedo620/LibraryManager/raw/master/LibraryManager.exe) (runnable on the .NET runtime).
 
 ## Underlying Architecture
 
