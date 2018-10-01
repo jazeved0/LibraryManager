@@ -10,7 +10,7 @@ As part of the design guidelines, Library Manager is a Client database programme
 
 Internally, Library Manager takes advantage of Microsoft's flagship .NET framework, Windows Presentation Foundation, or WPF. WPF works through two components: The design is programmed in **XAML**, or Extensible Application Markup Language (*different from XML*), while the behavior is programmed in **C#**. This separation of *design* and *behavior* is key to the framework's architecture, as it allows for the adoption of the Model-View-ViewModel design paradigm as outlined below.
 
-<img src="https://lh6.googleusercontent.com/Af-v-f6_zS01CwUnSnxriKNEmozAzd7ICQIRI1J_UmQiBbHA5w_V27PAWDLPXB3agclrRC_XtELotvG0LjmEKE9rEOKp4yzd33Se3j_A=s596" alt="mvvm" width="345" height="300" border="10" />
+<img src="https://i.imgur.com/k2jowmW.png" alt="mvvm" width="345" height="300" border="10" />
 
 ## Documentation
 
