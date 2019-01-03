@@ -8,7 +8,7 @@ Library Manager is a client database program designed to manage the issuance of 
 
 As part of the design guidelines, Library Manager is a Client database programmed designed to be connected to a centralized database server. Instead of locally serving the database, the demo provided under Releases uses a sample dataset in order to showcase functionality.
 
-Internally, Library Manager takes advantage of Microsoft's flagship .NET UI framework, Windows Presentation Foundation, or WPF. WPF works through two components: The design is programmed in **XAML**, or Extensible Application Markup Language (*different from XML*), while the behavior is programmed in **C#**. This separation of *design* and *behavior* is key to the framework's architecture, as it allows for the adoption of the Model-View-ViewModel design paradigm as outlined below.
+Internally, Library Manager takes advantage of Microsoft's flagship .NET UI framework, Windows Presentation Foundation, or WPF. WPF works through two components: thee design is programmed in **XAML**, or Extensible Application Markup Language (*different from XML*), while the behavior is programmed in **C#**. This separation of *design* and *behavior* is key to the framework's architecture, as it allows for the adoption of the Model-View-ViewModel design paradigm as outlined below.
 
 <img src="https://i.imgur.com/k2jowmW.png" alt="mvvm" width="345" height="300" border="10" />
 
